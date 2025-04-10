@@ -1,0 +1,10 @@
+selenium
+requests
+beautifulsoup4
+Pillow
+natsort
+img2pdf
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Input Form</title>
+    <style>
+        /* (スタイルは前回と同じでOK) */
+        body { font-family: sans-serif; padding: 20px; max-width: 700px; margin: auto; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #ccc; }
+        button { padding: 12px 20px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; }
+        button:hover { background-color: #0056b3; }
+        #status-message { margin-top: 20px; padding: 10px; border-radius: 4px; min-height: 1.5em; border: 1px solid transparent; word-wrap: break-word; } /* メッセージ表示エリア */
+        .success { background-color: #e7fadf; color: #5d7f51; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Enter URL to Process</h1>
+
+    <form id="url-form" action="/submit-url/" method="post">
+        <div>
+            <label for="url">URL:</label>
+            <input type="text" id="url-input" name="url" placeholder="https://example.com/..." required size="60">
+        </div>
+        <button type="submit">Process URL</button>
+    </form>
+
+    <div id="status-message"></div>
+
+    <script>
+        // HTML要素への参照を取得
+        const urlForm = document.getElementById('url-form');
+        const urlInput = document.getElementById('url-input');
+        const statusMessageDiv = document.getElementById('status-message');
+
+        // フォームの 'submit' イベントを監視
+        urlForm.addEventListener('submit', async (event) => {
+            // 1. デフォルトのフォーム送信動作（ページ遷移）をキャンセル
+            event.preventDefault();
+
+            // メッセージ表示を初期化 & 処理中表示
+            statusMessageDiv.textContent = 'Sending request...';
+            statusMessageDiv.className = ''; // スタイル用クラスをリセット
+
+            // 2. FormDataオブジェクトを作成してフォームデータを取得
+            const formData = new FormData(urlForm);
+
+            try {
+                // 3. Fetch APIを使って非同期POSTリクエストを送信
+                const response = await fetch('/submit-url/', {
+                    method: 'POST',
+                    body: formData // FormDataをbodyとして送信
+                });
+
+                // 4. FastAPIからのJSONレスポンスを解析
+                const result = await response.json();
+
+                // 5. レスポンスに応じてメッセージを表示
+                if (response.ok) { // HTTPステータスが成功(2xx)の場合
+                    // FastAPIが返したメッセージを表示
+                    statusMessageDiv.textContent = `${result.message} URL: ${result.submitted_url}`;
+                    statusMessageDiv.className = 'message success'; // 成功スタイル適用
+                    // urlInput.value = ''; // 任意: 送信成功後にフォームをクリアする場合
+                } else {
+                    // FastAPIがエラーステータス(4xx, 5xx)を返した場合
+                    statusMessageDiv.textContent = `Error: ${result.detail || 'Failed to process request.'}`;
+                    statusMessageDiv.className = 'message error'; // エラースタイル適用
+                }
+
+            } catch (error) {
+                // ネットワークエラーなど、fetch自体が失敗した場合
+                console.error('Error submitting form via Fetch:', error);
+                statusMessageDiv.textContent = 'Failed to send request. Check network or server status.';
+                statusMessageDiv.className = 'message error'; // エラースタイル適用
+            }
+        });
+    </script>
+    </body>
+</html>

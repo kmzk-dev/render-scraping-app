@@ -21,6 +21,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # カレントディレクトリ(ローカル)の全ファイルをコンテナのWORKDIR(/app)にコピー
 COPY . .
 EXPOSE 8000
+ENV PYTHONUNBUFFERED=1
 
 # コンテナ起動時に実行するコマンド（テスト用スクリプトを実行）
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

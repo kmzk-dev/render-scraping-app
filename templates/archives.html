@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archived PDFs</title>
+    <style>
+        /* index.htmlのスタイルを一部流用・調整 */
+        body { font-family: sans-serif; padding: 20px; max-width: 700px; margin: auto; }
+        h1 { margin-bottom: 20px; color: #333; }
+        ul { list-style: none; padding: 0; }
+        li {
+            margin-bottom: 12px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: flex; /* Flexboxで見栄え調整 */
+            justify-content: space-between; /* 要素間にスペース */
+            align-items: center;
+        }
+        li span { /* ファイル名表示部分 */
+            word-break: break-all; /* 長いファイル名で折り返し */
+            margin-right: 10px;
+        }
+        .actions a { /* リンク部分 */
+             margin-left: 10px; /* リンク間のスペース */
+             text-decoration: none;
+             color: #007bff;
+             font-weight: bold;
+             white-space: nowrap; /* "Download"などが折り返さないように */
+        }
+        .actions a:hover { text-decoration: underline; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+        .error { color: red; font-weight: bold; margin-top: 15px;}
+        .no-files { color: #555; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h1>Archived PDF Files</h1>
+    <p class="back-link"><a href="/">← Back to Input Form</a></p>
+
+    {% if error %}
+        <p class="error">Error: {{ error }}</p>
+    {% elif pdf_files %}
+        <ul>
+            {% for pdf in pdf_files %}
+            <li>
+                <span>{{ pdf.filename }}</span>
+                <span class="actions">
+                    <a href="{{ pdf.url }}" target="_blank" download="{{ pdf.filename }}">
+                        Download
+                    </a>
+                    </span>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-files">No PDF files found in the archive directory yet.</p>
+    {% endif %}
+
+</body>
+</html>

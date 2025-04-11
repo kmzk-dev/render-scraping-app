@@ -1,5 +1,5 @@
 # ベースとなるPythonイメージを指定
-FROM python:3.10-slim
+FROM python:3.11-slim
 # システムパッケージリストを更新し、必要なツールをインストール
 # --no-install-recommends で推奨パッケージを除きイメージサイズを削減
 RUN apt-get update && \

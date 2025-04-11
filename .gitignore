@@ -1,5 +1,6 @@
 __pycache__/
 backend/venv/
-output_data/
+temporaries/*
+!temporaries/.gitkeep
 archives/*
 !archives/.gitkeep
